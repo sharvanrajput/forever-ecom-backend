@@ -3,7 +3,8 @@ import { User } from "../models/user.model.js";
 
 export const verifyJwt = async (req, res, next) => {
   try {
-    const { token } = req.header;
+    const token = req.headers.authorization?.split(" ")[1];
+
 
     if (!token) {
       return res.status(401).json({ success: false, message: "Unauthorized request" });
