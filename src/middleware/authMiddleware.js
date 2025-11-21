@@ -3,7 +3,7 @@ import { User } from "../models/user.model.js";
 
 export const verifyJwt = async (req, res, next) => {
   try {
-    const { token } = req.cookies;
+    const { token } = req.header;
 
     if (!token) {
       return res.status(401).json({ success: false, message: "Unauthorized request" });
