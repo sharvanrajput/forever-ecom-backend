@@ -1,0 +1,17 @@
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+// Set storage configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+   cb(null, "./public/temp");
+  },
+
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + "-ferover-" + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+
+
+export const upload = multer({ storage });
