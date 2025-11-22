@@ -13,11 +13,15 @@ const app = express()
 const PORT = process.env.PORT || 5000
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: [
+    process.env.FRONTEND_URL,
+    "https://forever-ecom-frontend.onrender.com"
+  ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
 
 app.use(cookieParser())
 app.use(express.json())
