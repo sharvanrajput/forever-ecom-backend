@@ -53,9 +53,7 @@ export const placeOrder = async (req, res) => {
   }
 };
 
-import Order from "../models/Order.js";
-import Cart from "../models/Cart.js";
-import { sendEmail } from "../utils/sendEmail.js";
+ 
 
 export const verifyStripe = async (req, res) => {
   try {
