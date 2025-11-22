@@ -4,7 +4,7 @@ import { Order } from "../models/order.model.js";
 import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-const currency = "inr"
+const currency = "usd"
 const deliveryCharges = 10
 
 export const placeOrder = async (req, res) => {
