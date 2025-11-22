@@ -2,7 +2,7 @@ import { Router } from "express"
 import { upload } from "../middleware/multer.js"
 import { verifyJwt } from "../middleware/authMiddleware.js"
 import { Adminauth } from "../middleware/adminAuth.js"
-import { allOrders, placeOrder, placeOrderRazorpay, placeOrderStripe, updateOrderStatus, userOrder, verifyStripe } from "../controllers/order.controller.js"
+import { allOrders, placeOrder, placeOrderStripe, updateOrderStatus, userOrder, verifyStripe } from "../controllers/order.controller.js"
 
 const orderRoute = Router()
 
@@ -12,7 +12,6 @@ orderRoute.post("/status", verifyJwt, Adminauth, updateOrderStatus)
 
 // payment feature 
 orderRoute.post("/place", verifyJwt, placeOrder)
-orderRoute.post("/razorpay", verifyJwt, placeOrderRazorpay)
 orderRoute.post("/stripe", verifyJwt, placeOrderStripe)
 
 // user orders

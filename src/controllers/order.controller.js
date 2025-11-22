@@ -30,6 +30,22 @@ export const placeOrder = async (req, res) => {
 
     const newOrder = await Order.create(orderData)
 
+    let productList = "";
+    userCart.forEach(item => {
+      productList += `<li>${item.productId.name} - Quantity: ${item.quentity} - Amount: ₹${item.productId.price * item.quentity}</li>`;
+    });
+
+    const htmlContent = `
+      <h2>Thank you for your order!</h2>
+      <p>Order Details:</p>
+      <ul>
+        ${productList}
+      </ul>
+      <p>Total Amount: ₹${amount}</p>
+    `;
+
+    await sendEmail(req.user.email, "Order Confirmation", htmlContent);
+
     return res.status(201).send({ success: true, message: `Order placed successfully`, newOrder });
 
   } catch (error) {
@@ -37,18 +53,49 @@ export const placeOrder = async (req, res) => {
   }
 };
 
+import Order from "../models/Order.js";
+import Cart from "../models/Cart.js";
+import { sendEmail } from "../utils/sendEmail.js";
+
 export const verifyStripe = async (req, res) => {
   try {
-    const { id } = req.user
-    const { orderid, success } = req.body
+    const { id } = req.user;
+    const { orderid, success } = req.body;
 
     if (success === "true") {
-      await Order.findByIdAndUpdate(orderid, { payment: success })
-      await Cart.deleteMany({ userid: id })
-      res.json({ success: true })
+      // Update order as paid
+      const order = await Order.findByIdAndUpdate(
+        orderid,
+        { payment: true, status: "Payment Received" },
+        { new: true }
+      ).populate("items.productId");
+
+      // Clear user's cart
+      await Cart.deleteMany({ userid: id });
+
+      // Prepare email content
+      let productList = "";
+      order.items.forEach(item => {
+        productList += `<li>${item.productId.name} - Quantity: ${item.quentity} - Amount: ₹${item.productId.price * item.quentity}</li>`;
+      });
+
+      const htmlContent = `
+        <h2>Thank you for your order!</h2>
+        <p>Order Details:</p>
+        <ul>
+          ${productList}
+        </ul>
+        <p>Total Amount: ₹${order.amount}</p>
+      `;
+
+      // Send order confirmation email
+      await sendEmail(req.user.email, "Order Confirmation", htmlContent);
+
+      res.json({ success: true, message: "Payment verified and email sent!" });
     } else {
-      await Order.findByIdAndDelete(orderid)
-      res.json({ success: false })
+      // Payment failed or canceled, delete order
+      await Order.findByIdAndDelete(orderid);
+      res.json({ success: false, message: "Payment failed. Order canceled." });
     }
 
   } catch (error) {
@@ -129,13 +176,7 @@ export const placeOrderStripe = async (req, res) => {
 };
 
 
-export const placeOrderRazorpay = async (req, res) => {
-  try {
 
-  } catch (error) {
-    return res.status(500).send({ success: false, message: `Internal Server Error: ${error.message}` });
-  }
-};
 
 export const allOrders = async (req, res) => {
   try {
