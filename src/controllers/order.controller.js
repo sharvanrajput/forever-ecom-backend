@@ -1,3 +1,4 @@
+import { sendEmail } from "../config/sendEmail.js";
 import { Cart } from "../models/cart.model.js";
 import { Order } from "../models/order.model.js";
 import Stripe from "stripe";
